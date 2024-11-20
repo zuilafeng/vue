@@ -1,3 +1,11 @@
+/*
+ * @Author: zuilafeng syxzlf@163.com
+ * @Date: 2024-11-20
+ * @LastEditors: zuilafeng syxzlf@163.com
+ * @LastEditTime: 2024-11-20
+ * @FilePath: /vue/src/core/instance/inject.ts
+ * @Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ */
 import { warn, hasSymbol, isFunction, isObject } from '../util/index'
 import { defineReactive, toggleObserving } from '../observer/index'
 import type { Component } from 'types/component'
@@ -34,6 +42,7 @@ export function initInjections(vm: Component) {
     Object.keys(result).forEach(key => {
       /* istanbul ignore else */
       if (__DEV__) {
+        // 响应式来了...
         defineReactive(vm, key, result[key], () => {
           warn(
             `Avoid mutating an injected value directly since the changes will be ` +
@@ -50,6 +59,7 @@ export function initInjections(vm: Component) {
   }
 }
 
+// 注入的依赖值
 export function resolveInject(
   inject: any,
   vm: Component

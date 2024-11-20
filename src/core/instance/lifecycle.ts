@@ -389,7 +389,8 @@ export function deactivateChildComponent(vm: Component, direct?: boolean) {
     callHook(vm, 'deactivated')
   }
 }
-
+// {hook: 'beforeCreate', args: undefined, setContext: false}
+// {hook: 'created'}
 export function callHook(
   vm: Component,
   hook: string,

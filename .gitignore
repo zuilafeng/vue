@@ -3,6 +3,7 @@ node_modules
 *.log
 explorations
 TODOs.md
+.history
 RELEASE_NOTE*.md
 packages/server-renderer/basic.js
 packages/server-renderer/build.dev.js

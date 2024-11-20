@@ -40,10 +40,12 @@ export default class Dep {
     this.subs = []
   }
 
+  // 增加订阅者
   addSub(sub: DepTarget) {
     this.subs.push(sub)
   }
 
+  // 移除依赖者
   removeSub(sub: DepTarget) {
     // #12696 deps with massive amount of subscribers are extremely slow to
     // clean up in Chromium

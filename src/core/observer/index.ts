@@ -149,7 +149,8 @@ export function defineReactive(
   ) {
     val = obj[key]
   }
-
+  // 开始观察，返回一个观察者
+  // 此观察者会把object和array的值，递归观察, 使数据变得可观测
   let childOb = !shallow && observe(val, false, mock)
   Object.defineProperty(obj, key, {
     enumerable: true,
