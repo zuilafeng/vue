@@ -138,8 +138,7 @@ export default class Watcher implements DepTarget {
     let value
     const vm = this.vm
     try {
-      value = this.
-      .call(vm, vm)
+      value = this.getter.call(vm, vm)
     } catch (e: any) {
       if (this.user) {
         handleError(e, vm, `getter for watcher "${this.expression}"`)
