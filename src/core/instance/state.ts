@@ -32,6 +32,7 @@ import {
 import type { Component } from 'types/component'
 import { shallowReactive, TrackOpTypes } from 'v3'
 
+// 属性定义(可枚举，可配置，设置getter,setter方法)
 const sharedPropertyDefinition = {
   enumerable: true,
   configurable: true,
@@ -39,6 +40,8 @@ const sharedPropertyDefinition = {
   set: noop
 }
 
+// 在vm，也就是组件(this)上重新定义data中的属性值，并重写定义getter和setter
+// 这样，this.abc 可以取到data中的属性值，this.data可以对其赋值
 export function proxy(target: Object, sourceKey: string, key: string) {
   sharedPropertyDefinition.get = function proxyGetter() {
     return this[sourceKey][key]
@@ -119,8 +122,10 @@ function initProps(vm: Component, propsOptions: Object) {
   toggleObserving(true)
 }
 
+// 这个搞data变响应式的
 function initData(vm: Component) {
   let data: any = vm.$options.data
+  // 数据函数调用过后，绑定到组件中的_data属性上
   data = vm._data = isFunction(data) ? getData(data, vm) : data || {}
   if (!isPlainObject(data)) {
     data = {}
@@ -151,11 +156,13 @@ function initData(vm: Component) {
           vm
         )
     } else if (!isReserved(key)) {
+      // 奇怪的是为什么会用_data??
       proxy(vm, `_data`, key)
     }
   }
   // observe data
   const ob = observe(data)
+  // vmCount的作用？
   ob && ob.vmCount++
 }
 

@@ -32,6 +32,8 @@ export interface WatcherOptions extends DebuggerOptions {
   before?: Function
 }
 
+// Watcher 如何绑定到dep中的subs里的，没看到初始化后哪里赋值
+// 参数传递vm
 /**
  * A watcher parses an expression, collects dependencies,
  * and fires callback when the expression value changes.
@@ -81,6 +83,7 @@ export default class Watcher implements DepTarget {
         ? vm._scope
         : undefined
     )
+    // 在vm的_watcher中绑定了Watcher实例
     if ((this.vm = vm) && isRenderWatcher) {
       vm._watcher = this
     }
@@ -135,7 +138,8 @@ export default class Watcher implements DepTarget {
     let value
     const vm = this.vm
     try {
-      value = this.getter.call(vm, vm)
+      value = this.
+      .call(vm, vm)
     } catch (e: any) {
       if (this.user) {
         handleError(e, vm, `getter for watcher "${this.expression}"`)

@@ -19,6 +19,7 @@ import { isReadonly, isRef, TrackOpTypes, TriggerOpTypes } from '../../v3'
 
 const arrayKeys = Object.getOwnPropertyNames(arrayMethods)
 
+// 无初始值，人家还定义一个变量
 const NO_INIITIAL_VALUE = {}
 
 /**
@@ -53,8 +54,11 @@ export class Observer {
     // this.value = value
     this.dep = mock ? mockDep : new Dep()
     this.vmCount = 0
+    // 给value新增一个__ob__属性，值为该value的Observer实例
+    // 相当于为value打上标记，表示它已经被转化成响应式了，避免重复操作
     def(value, '__ob__', this)
     if (isArray(value)) {
+       // 当value为数组时的逻辑
       if (!mock) {
         if (hasProto) {
           /* eslint-disable no-proto */
@@ -71,6 +75,7 @@ export class Observer {
         this.observeArray(value)
       }
     } else {
+      // value是对象，这个方法调用
       /**
        * Walk through all properties and convert them into
        * getter/setters. This method should only be called when
@@ -106,6 +111,7 @@ export function observe(
   shallow?: boolean,
   ssrMockReactivity?: boolean
 ): Observer | void {
+  // 如果已经存在观察者，直接返回
   if (value && hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
     return value.__ob__
   }
@@ -133,6 +139,7 @@ export function defineReactive(
   shallow?: boolean,
   mock?: boolean
 ) {
+  // 定义一个依赖管理器
   const dep = new Dep()
 
   const property = Object.getOwnPropertyDescriptor(obj, key)
@@ -141,6 +148,7 @@ export function defineReactive(
   }
 
   // cater for pre-defined getter/setters
+  // 拿到属性值的getter和setter
   const getter = property && property.get
   const setter = property && property.set
   if (
@@ -149,7 +157,7 @@ export function defineReactive(
   ) {
     val = obj[key]
   }
-  // 开始观察，返回一个观察者
+  // 开始观察，返回一个观察者实例，会缓存
   // 此观察者会把object和array的值，递归观察, 使数据变得可观测
   let childOb = !shallow && observe(val, false, mock)
   Object.defineProperty(obj, key, {
@@ -165,10 +173,13 @@ export function defineReactive(
             key
           })
         } else {
+          // 主要针对对象在getter中收集依赖
           dep.depend()
         }
+        // 主要针对数组的依赖收集
         if (childOb) {
           childOb.dep.depend()
+          // 处理数组类型，进行子数据转换成响应式的
           if (isArray(value)) {
             dependArray(value)
           }
@@ -178,6 +189,7 @@ export function defineReactive(
     },
     set: function reactiveSetter(newVal) {
       const value = getter ? getter.call(obj) : val
+      // 判断新设置的值和原值，是不是一致，一致就没必要再触发
       if (!hasChanged(value, newVal)) {
         return
       }
@@ -205,6 +217,7 @@ export function defineReactive(
           oldValue: value
         })
       } else {
+        // 在setter中通知依赖更新
         dep.notify()
       }
     }
