@@ -195,10 +195,12 @@ export type ASTExpression = {
   end?: number
 }
 
+// 动态文本
 export type ASTText = {
   type: 3
   text: string
   static?: boolean
+  // 是否是注释
   isComment?: boolean
   // 2.4 ssr optimization
   ssrOptimizability?: number

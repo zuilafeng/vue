@@ -11,10 +11,13 @@ export const createCompiler = createCompilerCreator(function baseCompile(
   template: string,
   options: CompilerOptions
 ): CompiledResult {
+  // 将模板字符串，解析成ast的json
   const ast = parse(template.trim(), options)
+  // 静态代码优化开关
   if (options.optimize !== false) {
     optimize(ast, options)
   }
+  // 生成render和staticRenderFns函数
   const code = generate(ast, options)
   return {
     ast,
