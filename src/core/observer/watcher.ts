@@ -149,6 +149,7 @@ export default class Watcher implements DepTarget {
       // "touch" every property so they are all tracked as
       // dependencies for deep watching
       if (this.deep) {
+        // 深度get每一个值，触发依赖收集
         traverse(value)
       }
       popTarget()
@@ -162,9 +163,11 @@ export default class Watcher implements DepTarget {
    */
   addDep(dep: Dep) {
     const id = dep.id
+    // 观察的依赖项不能重复
     if (!this.newDepIds.has(id)) {
       this.newDepIds.add(id)
       this.newDeps.push(dep)
+      // 如果此dep没有添加过观察者，则绑定dep中的subs
       if (!this.depIds.has(id)) {
         dep.addSub(this)
       }
@@ -178,10 +181,12 @@ export default class Watcher implements DepTarget {
     let i = this.deps.length
     while (i--) {
       const dep = this.deps[i]
+      // 从依赖列表中删除自身，解除Watcher
       if (!this.newDepIds.has(dep.id)) {
         dep.removeSub(this)
       }
     }
+    // 这下面代码，没看懂
     let tmp: any = this.depIds
     this.depIds = this.newDepIds
     this.newDepIds = tmp

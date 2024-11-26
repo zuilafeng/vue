@@ -249,7 +249,11 @@ export function set(
   }
   const ob = (target as any).__ob__
   if (isArray(target) && isValidArrayIndex(key)) {
+    // 数组且key是合法下标(是有效数字)
+    // key有可能是超出数据下标，是稀疏数组
     target.length = Math.max(target.length, key)
+    // 给新设置的值，赋值，且通知数据变化，界面渲染更新
+    // 而且会把新设置的值转成响应式的
     target.splice(key, 1, val)
     // when mocking for SSR, array methods are not hijacked
     if (ob && !ob.shallow && ob.mock) {
@@ -257,10 +261,12 @@ export function set(
     }
     return val
   }
+  // 对于已经存在的对象属性值修改，直接赋值就可，会被vue侦测到
   if (key in target && !(key in Object.prototype)) {
     target[key] = val
     return val
   }
+  // target不能是Vue实例或vue实例的根数据对象
   if ((target as any)._isVue || (ob && ob.vmCount)) {
     __DEV__ &&
       warn(
@@ -269,10 +275,12 @@ export function set(
       )
     return val
   }
+  // 如果target不是响应式数据，直接赋值即可
   if (!ob) {
     target[key] = val
     return val
   }
+  // 对于不存在的属性，先在target上添加一个新属性，并进行响应式处理
   defineReactive(ob.value, key, val, undefined, ob.shallow, ob.mock)
   if (__DEV__) {
     ob.dep.notify({
@@ -283,6 +291,7 @@ export function set(
       oldValue: undefined
     })
   } else {
+    // 向target依赖触发通知
     ob.dep.notify()
   }
   return val
@@ -299,6 +308,7 @@ export function del(target: any[] | object, key: any) {
       `Cannot delete reactive property on undefined, null, or primitive value: ${target}`
     )
   }
+  // 数组，下标有效，直接删除
   if (isArray(target) && isValidArrayIndex(key)) {
     target.splice(key, 1)
     return
@@ -317,10 +327,12 @@ export function del(target: any[] | object, key: any) {
       warn(`Delete operation on key "${key}" failed: target is readonly.`)
     return
   }
+  // 如果key不是target的自身属性，则程序终止
   if (!hasOwn(target, key)) {
     return
   }
   delete target[key]
+  // 如果不是相应式的，则不需要继续
   if (!ob) {
     return
   }

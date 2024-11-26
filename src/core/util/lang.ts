@@ -29,6 +29,7 @@ export function def(obj: Object, key: string, val: any, enumerable?: boolean) {
 /**
  * Parse simple path.
  */
+// 正则表达式的source
 const bailRE = new RegExp(`[^${unicodeRegExp.source}.$_\\d]`)
 export function parsePath(path: string): any {
   if (bailRE.test(path)) {
